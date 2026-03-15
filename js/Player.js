@@ -8,46 +8,61 @@ var Player = {
     PAUSED: 2,
 
     init: function() {
-        var success = true;
+        console.log("Player.init()");
         this.plugin = document.getElementById("pluginPlayer");
         this.audioPlugin = document.getElementById("pluginAudio");
         this.tvmwPlugin = document.getElementById("pluginTVMW");
 
         if (!this.plugin) {
             console.log("Player plugin not found");
-            success = false;
+            return false;
         }
 
-        return success;
+        // Some Orsay versions need this initial set
+        if (this.plugin.SetDisplayArea) {
+            this.plugin.SetDisplayArea(0, 0, 1280, 720);
+        }
+
+        return true;
     },
 
     play: function(url) {
-        console.log("Playing URL: " + url);
+        console.log("Player.play(" + url + ")");
         if (!this.plugin) return;
 
         this.stop();
 
-        // Samsung Legacy Player API
-        // For HLS/M3U8 on legacy Orsay, sometimes the URL needs a suffix |COMPONENT=HLS
+        // HLS Support flag for legacy player
         var playUrl = url;
         if (playUrl.indexOf(".m3u8") !== -1 && playUrl.indexOf("|COMPONENT=HLS") === -1) {
             playUrl += "|COMPONENT=HLS";
         }
 
-        this.plugin.SetVideoDest(0, 0, 1280, 720);
-        this.plugin.InitPlayer(playUrl);
+        try {
+            // Set video destination/area
+            if (this.plugin.SetVideoDest) {
+                this.plugin.SetVideoDest(0, 0, 1280, 720);
+            }
 
-        // Set display area again just in case
-        this.plugin.SetDisplayArea(0, 0, 1280, 720);
+            // Standard InitPlayer
+            this.plugin.InitPlayer(playUrl);
 
-        this.plugin.StartPlayback();
-
-        this.state = this.PLAYING;
+            // Start
+            this.plugin.StartPlayback();
+            this.state = this.PLAYING;
+            console.log("Playback started");
+        } catch (e) {
+            console.log("Playback failed: " + e.message);
+        }
     },
 
     stop: function() {
-        if (this.plugin && this.state !== this.STOPPED) {
-            this.plugin.Stop();
+        if (this.plugin && (this.state === this.PLAYING || this.state === this.PAUSED)) {
+            try {
+                this.plugin.Stop();
+            } catch (e) {
+                console.log("Stop failed: " + e.message);
+            }
             this.state = this.STOPPED;
         }
     },

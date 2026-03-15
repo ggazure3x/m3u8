@@ -6,23 +6,30 @@ var Main = {
     m3u8Url: "https://raw.githubusercontent.com/ggazure3x/M3U8/refs/heads/main/test%2Cm3u8",
 
     onLoad: function() {
-        console.log("Main.onLoad()");
+        console.log("Main.onLoad() - Start");
 
         try {
             this.widgetAPI = new Common.API.Widget();
             this.tvKey = new Common.API.TVKeyValue();
+
+            // Register keys
+            this.widgetAPI.sendReadyEvent();
+            console.log("Main.onLoad() - Widget API Ready");
         } catch (e) {
-            console.log("Common API not found, using mocks for development");
+            console.log("Common API not found or failed, using mocks for development");
             this.widgetAPI = { sendReadyEvent: function(){}, sendReturnEvent: function(){} };
             this.tvKey = { KEY_CH_UP: 33, KEY_UP: 38, KEY_CH_DOWN: 34, KEY_DOWN: 40, KEY_RETURN: 8, KEY_EXIT: 27 };
         }
 
         if (Player.init()) {
+            console.log("Main.onLoad() - Player Initialized");
             this.fetchChannels();
+        } else {
+            console.log("Main.onLoad() - Player Init Failed");
         }
 
-        this.widgetAPI.sendReadyEvent();
         this.setupEventListeners();
+        console.log("Main.onLoad() - End");
     },
 
     onUnload: function() {
