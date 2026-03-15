@@ -19,6 +19,21 @@ var Main = {
             console.log("Common API not found or failed, using mocks for development");
             this.widgetAPI = { sendReadyEvent: function(){}, sendReturnEvent: function(){} };
             this.tvKey = { KEY_CH_UP: 33, KEY_UP: 38, KEY_CH_DOWN: 34, KEY_DOWN: 40, KEY_RETURN: 8, KEY_EXIT: 27 };
+
+            // Mock webapis for development
+            if (typeof webapis === "undefined") {
+                window.webapis = {
+                    avplay: {
+                        open: function(){},
+                        setDisplayRect: function(){},
+                        setListener: function(){},
+                        prepare: function(){},
+                        play: function(){},
+                        stop: function(){},
+                        close: function(){}
+                    }
+                };
+            }
         }
 
         if (Player.init()) {
@@ -26,6 +41,8 @@ var Main = {
             this.fetchChannels();
         } else {
             console.log("Main.onLoad() - Player Init Failed");
+            // Still fetch channels to show UI in development
+            this.fetchChannels();
         }
 
         this.setupEventListeners();

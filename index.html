@@ -7,7 +7,7 @@
     <!-- Samsung Smart TV Legacy Scripts -->
     <script type="text/javascript" src="$MANAGER_WIDGET/Common/API/Widget.js"></script>
     <script type="text/javascript" src="$MANAGER_WIDGET/Common/API/TVKeyValue.js"></script>
-    <script type="text/javascript" src="$MANAGER_WIDGET/Common/afc/Lib/Lib.js"></script>
+    <script type="text/javascript" src="$MANAGER_WIDGET/Common/webapi/1.0/webapis.js"></script>
 
     <!-- Player and App Logic -->
     <link rel="stylesheet" href="css/Main.css" type="text/css">
@@ -17,10 +17,8 @@
 
 <body onload="Main.onLoad();" onunload="Main.onUnload();">
 
-    <!-- Legacy Player Plugin -->
-    <object id="pluginPlayer" border="0" classid="clsid:SAMSUNG-INFOLINK-PLAYER"></object>
-    <object id="pluginAudio" border="0" classid="clsid:SAMSUNG-INFOLINK-AUDIO"></object>
-    <object id="pluginTVMW" border="0" classid="clsid:SAMSUNG-INFOLINK-TVMW"></object>
+    <!-- AVPlay requires a container for the video hole -->
+    <div id="avplayer-container"></div>
 
     <!-- UI Overlay -->
     <div id="ui-overlay">

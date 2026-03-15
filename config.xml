@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget>
+<widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" version="1.0.0" viewmodes="maximized">
     <widgetname>LegacyTVApp</widgetname>
     <icon>icon.png</icon>
     <width>1280</width>
@@ -10,4 +10,10 @@
         <email>jules@example.com</email>
         <link>http://example.com</link>
     </author>
+
+    <!-- Orsay/Tizen Privileges for AVPlay and Network -->
+    <access origin="*" subdomains="true"></access>
+    <tizen:privilege name="http://developer.samsung.com/privilege/avplay"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
 </widget>
