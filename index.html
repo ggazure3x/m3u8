@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Legacy TV Player</title>
+
+    <!-- Samsung Smart TV Legacy Scripts -->
+    <script type="text/javascript" src="$MANAGER_WIDGET/Common/API/Widget.js"></script>
+    <script type="text/javascript" src="$MANAGER_WIDGET/Common/API/TVKeyValue.js"></script>
+    <script type="text/javascript" src="$MANAGER_WIDGET/Common/afc/Lib/Lib.js"></script>
+
+    <!-- Player and App Logic -->
+    <link rel="stylesheet" href="css/Main.css" type="text/css">
+    <script type="text/javascript" src="js/Player.js"></script>
+    <script type="text/javascript" src="js/Main.js"></script>
+</head>
+
+<body onload="Main.onLoad();" onunload="Main.onUnload();">
+
+    <!-- Legacy Player Plugin -->
+    <object id="pluginPlayer" border="0" classid="clsid:SAMSUNG-INFOLINK-PLAYER"></object>
+    <object id="pluginAudio" border="0" classid="clsid:SAMSUNG-INFOLINK-AUDIO"></object>
+    <object id="pluginTVMW" border="0" classid="clsid:SAMSUNG-INFOLINK-TVMW"></object>
+
+    <!-- UI Overlay -->
+    <div id="ui-overlay">
+        <div id="channel-info">
+            <span id="channel-name">Carregando...</span>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    overflow: hidden;
+    width: 1280px;
+    height: 720px;
+}
+
+#pluginPlayer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1280px;
+    height: 720px;
+    z-index: 1;
+}
+
+#ui-overlay {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    right: 50px;
+    z-index: 10;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-shadow: 2px 2px 4px #000000;
+}
+
+#channel-info {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+#channel-name {
+    font-size: 36px;
+    font-weight: bold;
+}
