@@ -1,20 +1,65 @@
 var Player = {
     plugin: null,
     audioPlugin: null,
+    tvmwPlugin: null,
     state: "STOPPED",
 
     init: function() {
         Logger.log("Player.init() - pure Orsay mode");
         this.plugin = document.getElementById("pluginPlayer");
         this.audioPlugin = document.getElementById("pluginAudio");
+        this.tvmwPlugin = document.getElementById("pluginTVMW");
 
         if (!this.plugin) {
-            Logger.log("Player.init() - pluginPlayer NOT FOUND in DOM");
+            Logger.log("Player.init() - pluginPlayer NOT FOUND");
             return false;
         }
 
-        Logger.log("Player.init() - OK");
+        this.setMediaSource();
+        this.setDisplayArea(0, 0, 1280, 720);
         return true;
+    },
+
+    setDisplayArea: function(x, y, w, h) {
+        Logger.log("Player.setDisplayArea(" + x + ", " + y + ", " + w + ", " + h + ")");
+        try {
+            if (this.plugin.SetDisplayArea) {
+                this.plugin.SetDisplayArea(x, y, w, h);
+                Logger.log("Player.setDisplayArea() - OK");
+            } else if (this.plugin.Execute) {
+                this.plugin.Execute("SetDisplayArea", x, y, w, h);
+            }
+
+            if (this.plugin.SetVideoDest) {
+                this.plugin.SetVideoDest(x, y, w, h);
+                Logger.log("Player.setVideoDest() - OK");
+            } else if (this.plugin.Execute) {
+                this.plugin.Execute("SetVideoDest", x, y, w, h);
+            }
+        } catch (e) {
+            Logger.log("Player.setDisplayArea() - ERROR: " + e.message);
+        }
+    },
+
+    setMediaSource: function() {
+        Logger.log("Player.setMediaSource() - Switching to Media Source");
+        try {
+            if (this.tvmwPlugin) {
+                if (typeof this.tvmwPlugin.SetSource === "function") {
+                    this.tvmwPlugin.SetSource(0);
+                    Logger.log("Player.setMediaSource() - TVMW SetSource(0) OK");
+                }
+            }
+
+            if (this.audioPlugin) {
+                if (typeof this.audioPlugin.SetUserMute === "function") {
+                    this.audioPlugin.SetUserMute(1);
+                    Logger.log("Player.setMediaSource() - Audio Muted OK");
+                }
+            }
+        } catch (e) {
+            Logger.log("Player.setMediaSource() - ERROR: " + e.message);
+        }
     },
 
     play: function(url) {
@@ -24,7 +69,10 @@ var Player = {
         try {
             this.stop();
 
-            // Suffix for HLS on Orsay legacy player
+            if (this.audioPlugin && typeof this.audioPlugin.SetUserMute === "function") {
+                this.audioPlugin.SetUserMute(0);
+            }
+
             var playUrl = url;
             if (playUrl.indexOf(".m3u8") !== -1 && playUrl.indexOf("|COMPONENT=HLS") === -1) {
                 playUrl += "|COMPONENT=HLS";
@@ -35,14 +83,9 @@ var Player = {
                 this.plugin.InitPlayer(playUrl);
             } else if (this.plugin.Execute) {
                 this.plugin.Execute("InitPlayer", playUrl);
-            } else {
-                Logger.log("Player.play() - InitPlayer/Execute NOT FOUND on plugin");
             }
 
-            Logger.log("Player.play() - Calling SetDisplayArea");
-            if (this.plugin.SetDisplayArea) {
-                this.plugin.SetDisplayArea(0, 0, 1280, 720);
-            }
+            this.setDisplayArea(0, 0, 1280, 720);
 
             Logger.log("Player.play() - Calling StartPlayback");
             if (typeof this.plugin.StartPlayback === "function") {
@@ -52,14 +95,12 @@ var Player = {
             }
 
             this.state = "PLAYING";
-            Logger.log("Player.play() - Playback attempt completed");
         } catch (e) {
-            Logger.log("Player.play() - FATAL ERROR: " + e.message);
+            Logger.log("Player.play() - ERROR: " + e.message);
         }
     },
 
     stop: function() {
-        Logger.log("Player.stop()");
         if (this.plugin && this.state !== "STOPPED") {
             try {
                 if (typeof this.plugin.Stop === "function") {
@@ -68,38 +109,16 @@ var Player = {
                     this.plugin.Execute("Stop");
                 }
                 this.state = "STOPPED";
-                Logger.log("Player.stop() - OK");
             } catch (e) {
                 Logger.log("Player.stop() - ERROR: " + e.message);
             }
         }
     },
 
-    pause: function() {
-        if (this.plugin && this.state === "PLAYING") {
-            if (typeof this.plugin.Pause === "function") {
-                this.plugin.Pause();
-            } else if (this.plugin.Execute) {
-                this.plugin.Execute("Pause");
-            }
-            this.state = "PAUSED";
-            Logger.log("Player.pause() - OK");
-        }
-    },
-
-    resume: function() {
-        if (this.plugin && this.state === "PAUSED") {
-            if (typeof this.plugin.Resume === "function") {
-                this.plugin.Resume();
-            } else if (this.plugin.Execute) {
-                this.plugin.Execute("Resume");
-            }
-            this.state = "PLAYING";
-            Logger.log("Player.resume() - OK");
-        }
-    },
-
     deinit: function() {
         this.stop();
+        if (this.audioPlugin && typeof this.audioPlugin.SetUserMute === "function") {
+            this.audioPlugin.SetUserMute(0);
+        }
     }
 };
