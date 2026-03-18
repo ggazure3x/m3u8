@@ -6,63 +6,60 @@ var Main = {
     m3u8Url: "https://raw.githubusercontent.com/ggazure3x/M3U8/refs/heads/main/test%2Cm3u8",
 
     onLoad: function() {
-        console.log("Main.onLoad() - Start");
+        Logger.log("Main.onLoad() - pure Orsay START");
 
         try {
             this.widgetAPI = new Common.API.Widget();
             this.tvKey = new Common.API.TVKeyValue();
 
-            // Register keys
+            // Register keys and tell TV we are ready
             this.widgetAPI.sendReadyEvent();
-            console.log("Main.onLoad() - Widget API Ready");
+            Logger.log("Main.onLoad() - Widget API Ready (ReadyEvent Sent)");
         } catch (e) {
-            console.log("Common API not found or failed, using mocks for development");
+            Logger.log("Main.onLoad() - Widget API ERROR: " + e.message);
+            // Browser dev mode mocks
             this.widgetAPI = { sendReadyEvent: function(){}, sendReturnEvent: function(){} };
             this.tvKey = { KEY_CH_UP: 33, KEY_UP: 38, KEY_CH_DOWN: 34, KEY_DOWN: 40, KEY_RETURN: 8, KEY_EXIT: 27 };
+        }
 
-            // Mock webapis for development
-            if (typeof webapis === "undefined") {
-                window.webapis = {
-                    avplay: {
-                        open: function(){},
-                        setDisplayRect: function(){},
-                        setListener: function(){},
-                        prepare: function(){},
-                        play: function(){},
-                        stop: function(){},
-                        close: function(){}
-                    }
-                };
+        var self = this;
+        // 1s delay for hardware to settle plugins
+        setTimeout(function() {
+            if (Player.init()) {
+                Logger.log("Main.onLoad() - Player OK after delay");
+                self.fetchChannels();
+            } else {
+                Logger.log("Main.onLoad() - Player Init FAILED after delay");
+                self.fetchChannels();
             }
-        }
-
-        if (Player.init()) {
-            console.log("Main.onLoad() - Player Initialized");
-            this.fetchChannels();
-        } else {
-            console.log("Main.onLoad() - Player Init Failed");
-            // Still fetch channels to show UI in development
-            this.fetchChannels();
-        }
+        }, 1500);
 
         this.setupEventListeners();
-        console.log("Main.onLoad() - End");
+        Logger.log("Main.onLoad() - pure Orsay LOAD COMPLETE");
     },
 
     onUnload: function() {
-        console.log("Main.onUnload()");
+        Logger.log("Main.onUnload()");
         Player.deinit();
     },
 
     fetchChannels: function() {
+        Logger.log("Main.fetchChannels() - Starting HTTP GET...");
         var self = this;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", this.m3u8Url, true);
         xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                self.parseM3U8(xhr.responseText);
-                if (self.channels.length > 0) {
-                    self.playChannel(0);
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    Logger.log("Main.fetchChannels() - 200 OK");
+                    self.parseM3U8(xhr.responseText);
+                    if (self.channels.length > 0) {
+                        self.playChannel(0);
+                    } else {
+                        Logger.log("Main.fetchChannels() - NO CHANNELS FOUND");
+                    }
+                } else {
+                    Logger.log("Main.fetchChannels() - ERROR CODE: " + xhr.status);
                 }
             }
         };
@@ -71,7 +68,7 @@ var Main = {
 
     parseM3U8: function(data) {
         var lines = data.split("\n");
-        var currentName = "Unknown Channel";
+        var currentName = "Desconhecido";
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i].trim();
@@ -85,44 +82,48 @@ var Main = {
                     name: currentName,
                     url: line
                 });
-                currentName = "Unknown Channel";
+                currentName = "Desconhecido";
             }
         }
-        console.log("Parsed " + this.channels.length + " channels");
+        Logger.log("Main.parseM3U8() - " + this.channels.length + " CHANNELS");
     },
 
     playChannel: function(index) {
         if (index >= 0 && index < this.channels.length) {
             this.currentChannelIndex = index;
             var channel = this.channels[index];
+            Logger.log("Main.playChannel(" + index + ") -> " + channel.name);
+
             document.getElementById("channel-name").innerHTML = channel.name;
             Player.play(channel.url);
 
-            // Show overlay temporarily
             var overlay = document.getElementById("ui-overlay");
             overlay.style.display = "block";
             if (this.overlayTimeout) clearTimeout(this.overlayTimeout);
             this.overlayTimeout = setTimeout(function() {
                 overlay.style.display = "none";
-            }, 5000);
+            }, 10000);
         }
     },
 
     nextChannel: function() {
+        Logger.log("Main.nextChannel()");
         var nextIndex = (this.currentChannelIndex + 1) % this.channels.length;
         this.playChannel(nextIndex);
     },
 
     previousChannel: function() {
+        Logger.log("Main.previousChannel()");
         var prevIndex = (this.currentChannelIndex - 1 + this.channels.length) % this.channels.length;
         this.playChannel(prevIndex);
     },
 
     setupEventListeners: function() {
+        Logger.log("Main.setupEventListeners()");
         var self = this;
         document.onkeydown = function(event) {
             var keyCode = event.keyCode;
-            console.log("Key pressed: " + keyCode);
+            Logger.log("KEY PRESS: " + keyCode);
 
             switch (keyCode) {
                 case self.tvKey.KEY_CH_UP:
@@ -135,6 +136,7 @@ var Main = {
                     break;
                 case self.tvKey.KEY_RETURN:
                 case self.tvKey.KEY_EXIT:
+                    Logger.log("Exiting application by user request.");
                     self.widgetAPI.sendReturnEvent();
                     break;
             }
