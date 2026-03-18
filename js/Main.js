@@ -6,7 +6,7 @@ var Main = {
     m3u8Url: "https://raw.githubusercontent.com/ggazure3x/M3U8/refs/heads/main/test%2Cm3u8",
 
     onLoad: function() {
-        Logger.log("Main.onLoad() - pure Orsay START");
+        Logger.log("Main.onLoad() - J5290 pure Orsay mode START");
 
         try {
             this.widgetAPI = new Common.API.Widget();
@@ -14,28 +14,28 @@ var Main = {
 
             // Register keys and tell TV we are ready
             this.widgetAPI.sendReadyEvent();
-            Logger.log("Main.onLoad() - Widget API Ready (ReadyEvent Sent)");
+            Logger.log("Main.onLoad() - J5290 Widget API Ready (ReadyEvent Sent)");
         } catch (e) {
-            Logger.log("Main.onLoad() - Widget API ERROR: " + e.message);
+            Logger.log("Main.onLoad() - J5290 Widget API ERROR: " + e.message);
             // Browser dev mode mocks
             this.widgetAPI = { sendReadyEvent: function(){}, sendReturnEvent: function(){} };
             this.tvKey = { KEY_CH_UP: 33, KEY_UP: 38, KEY_CH_DOWN: 34, KEY_DOWN: 40, KEY_RETURN: 8, KEY_EXIT: 27 };
         }
 
         var self = this;
-        // 1s delay for hardware to settle plugins
+        // J5290 Orsay delay for plugin stability
         setTimeout(function() {
             if (Player.init()) {
-                Logger.log("Main.onLoad() - Player OK after delay");
+                Logger.log("Main.onLoad() - J5290 Player OK after delay");
                 self.fetchChannels();
             } else {
-                Logger.log("Main.onLoad() - Player Init FAILED after delay");
+                Logger.log("Main.onLoad() - J5290 Player Init FAILED after delay");
                 self.fetchChannels();
             }
         }, 1500);
 
         this.setupEventListeners();
-        Logger.log("Main.onLoad() - pure Orsay LOAD COMPLETE");
+        Logger.log("Main.onLoad() - J5290 pure Orsay LOAD COMPLETE");
     },
 
     onUnload: function() {
@@ -123,7 +123,7 @@ var Main = {
         var self = this;
         document.onkeydown = function(event) {
             var keyCode = event.keyCode;
-            Logger.log("KEY PRESS: " + keyCode);
+            Logger.log("J5290 KEY PRESS: " + keyCode);
 
             switch (keyCode) {
                 case self.tvKey.KEY_CH_UP:

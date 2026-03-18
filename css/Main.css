@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: blue; /* High-visibility for pure Orsay startup */
+    background-color: #000000; /* Pure black for J5290 startup */
     overflow: hidden;
     width: 1280px;
     height: 720px;
@@ -29,30 +29,30 @@ body {
 }
 
 #channel-info {
-    background: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 25px;
+    border-radius: 12px;
     display: inline-block;
-    border: 3px solid yellow;
+    border: 3px solid #ffcc00; /* Golden yellow */
 }
 
 #channel-name {
-    font-size: 48px;
+    font-size: 52px;
     font-weight: bold;
 }
 
 #log-container {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    max-height: 400px;
+    top: 30px;
+    left: 30px;
+    right: 30px;
+    max-height: 420px;
     overflow: hidden;
-    background-color: rgba(0, 0, 0, 0.85);
-    color: lime;
-    font-size: 20px;
-    font-family: monospace;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #33ff33; /* Neon green */
+    font-size: 22px;
+    font-family: 'Courier New', monospace;
     z-index: 9999;
-    padding: 15px;
-    border: 3px solid red;
+    padding: 20px;
+    border: 3px solid #ff3333; /* Pure red */
 }
