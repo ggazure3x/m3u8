@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget>
+    <widgetname>LegacyTVApp</widgetname>
+    <icon>icon.png</icon>
+    <width>1280</width>
+    <height>720</height>
+    <description>Samsung Legacy Orsay TV App with M3U8 Player</description>
+    <author>
+        <name>Jules</name>
+        <email>jules@example.com</email>
+        <link>http://example.com</link>
+    </author>
+</widget>
